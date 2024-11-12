@@ -10,7 +10,9 @@ ENV PIP_PROGRESS_BAR=off
 
 # install dependencies
 # RUN apk add --no-cache --update \
-# 	git mesa-gl
+# 	git \
+# 	mesa-gl
+# gettext-base provides `envsubst`.
 RUN apt update && apt install -y \
 	git \
 	libgl1-mesa-glx \
