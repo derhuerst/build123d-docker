@@ -1,0 +1,8 @@
+.DS_Store
+Thumbs.db
+
+.nvm-version
+node_modules
+
+/package-lock.json
+/yarn.lock
