@@ -1,0 +1,6 @@
+# Note: We pin versions here, so that the dependency update bot will update this file and trigger new CI runs.
+
+# We don't install cadquery from pypi but via Git in order to work around https://github.com/CadQuery/cadquery/issues/1626.
+git+https://github.com/CadQuery/cadquery@a175cb8ea334bd5ffc53ee7eab00484ba954a7b2
+
+build123d==0.7.0

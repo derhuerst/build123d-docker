@@ -18,16 +18,9 @@ RUN apt update && apt install -y \
 	libgl1-mesa-glx \
 	&& rm -rf /var/lib/apt/lists/*
 
-# install cadquery
-# We do this manually to work around https://github.com/CadQuery/cadquery/issues/1626.
-# ARG CATQUERY_VERSION=git+https://github.com/CadQuery/cadquery
-ARG CATQUERY_VERSION=cadquery
-RUN python3 -m pip install $CATQUERY_VERSION
-
-# install build123d
-# ARG BUILD123D_VERSION=git+https://github.com/gumyr/build123d
-ARG BUILD123D_VERSION=build123d
-RUN python3 -m pip install $BUILD123D_VERSION
+# install cadquery & build123d
+RUN --mount=type=bind,target=/app \
+	python3 -m pip install -r /app/requirements.txt
 
 WORKDIR /app
 
@@ -43,9 +36,8 @@ LABEL org.opencontainers.image.title='CAD viewer capable of displaying OCP model
 LABEL org.opencontainers.image.licenses='Apache-2.0 AND MIT'
 
 # install yet-another-cat-viewer (yacv)
-# ARG YACV_VERSION=git+https://github.com/yeicor-3d/yet-another-cad-viewer
-ARG YACV_VERSION=yacv-server
-RUN python3 -m pip install $YACV_VERSION
+RUN --mount=type=bind,target=/app \
+	python3 -m pip install -r /app/yacv.requirements.txt
 
 # from https://github.com/yeicor-3d/yet-another-cad-viewer/blob/v0.9.1/yacv_server/yacv.py#L172, but
 # - we listen on 0.0.0.0 to allow connecting from outside the container
@@ -61,7 +53,9 @@ LABEL org.opencontainers.image.title='hot-reloading live server for visualizing 
 # https://github.com/ccazabon/cq-studio/blob/release/0.8.1/README.md#license
 LABEL org.opencontainers.image.licenses='Apache-2.0 AND GPL-2.0-only'
 
-RUN python3 -m pip install cq-studio
+# install cq-studio
+RUN --mount=type=bind,target=/app \
+	python3 -m pip install -r /app/cq-studio.requirements.txt
 
 # from todo, but
 # - we listen on 0.0.0.0 to allow connecting from outside the container

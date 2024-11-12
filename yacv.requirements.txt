@@ -1,0 +1,3 @@
+# Note: We pin versions here, so that the dependency update bot will update this file and trigger new CI runs.
+
+yacv-server==0.9.1
