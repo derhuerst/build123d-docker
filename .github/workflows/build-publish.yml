@@ -9,10 +9,24 @@ on:
 jobs:
   build-test-publish:
     name: build, test & publish Docker image
+    strategy:
+      matrix:
+        # todo: use Docker buildx bake instead? https://docs.docker.com/build/bake/
+        docker-image:
+          - '{"tag": "latest", "target": "build123d"}'
+          - '{"tag": "with_yacv", "target": "yacv"}'
+          - '{"tag": "with_cq_studio", "target": "cq_studio"}'
     runs-on: ubuntu-latest
     permissions:
       packages: write
     steps:
+    - name: parse Docker build details
+      id: docker-build
+      run: |
+        set -x
+        echo "tag=$(jq -r .tag <<< '${{ matrix.docker-image }}')" >> "$GITHUB_OUTPUT"
+        echo "target=$(jq -r .target <<< '${{ matrix.docker-image }}')" >> "$GITHUB_OUTPUT"
+
     - name: checkout
       uses: actions/checkout@v4
 
@@ -42,8 +56,9 @@ jobs:
       with:
         push: ${{ github.event_name == 'push' && github.ref_type == 'branch' && github.ref_name == 'main' }}
         context: .
+        target: ${{ steps.docker-build.outputs.target }}
         tags: |
-          ghcr.io/${{ github.repository_owner }}/build123d:latest
+          ghcr.io/${{ github.repository_owner }}/build123d:${{ steps.docker-build.outputs.tag }}
         labels: ${{ steps.docker-metadata.outputs.labels }}
         annotations: ${{ steps.docker-metadata.outputs.annotations }}
         # todo: linux/arm64 (requires support by the cadquery-ocp package)

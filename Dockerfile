@@ -30,3 +30,40 @@ RUN python3 -m pip install $BUILD123D_VERSION
 WORKDIR /app
 
 ENTRYPOINT [ "python3" ]
+
+# ---
+
+FROM build123d AS yacv
+
+LABEL org.opencontainers.image.title='CAD viewer capable of displaying OCP models (CadQuery/Build123d) in a web browser'
+# build123d license + yacv license
+# https://github.com/yeicor-3d/yet-another-cad-viewer/blob/v0.9.1/LICENSE
+LABEL org.opencontainers.image.licenses='Apache-2.0 AND MIT'
+
+# install yet-another-cat-viewer (yacv)
+# ARG YACV_VERSION=git+https://github.com/yeicor-3d/yet-another-cad-viewer
+ARG YACV_VERSION=yacv-server
+RUN python3 -m pip install $YACV_VERSION
+
+# from https://github.com/yeicor-3d/yet-another-cad-viewer/blob/v0.9.1/yacv_server/yacv.py#L172, but
+# - we listen on 0.0.0.0 to allow connecting from outside the container
+ENV YACV_HOST=0.0.0.0
+ENV YACV_PORT=32323
+
+# ---
+
+FROM build123d AS cq_studio
+
+LABEL org.opencontainers.image.title='hot-reloading live server for visualizing 3D models designed with CadQuery code'
+# build123d license + cq-studio license
+# https://github.com/ccazabon/cq-studio/blob/release/0.8.1/README.md#license
+LABEL org.opencontainers.image.licenses='Apache-2.0 AND GPL-2.0-only'
+
+RUN python3 -m pip install cq-studio
+
+# from todo, but
+# - we listen on 0.0.0.0 to allow connecting from outside the container
+ENV YACV_HOST=0.0.0.0
+ENV YACV_PORT=32323
+
+ENTRYPOINT [ "/usr/local/bin/cq-studio", "--address", "${YACV_HOST}" ]
