@@ -16,6 +16,7 @@ ENV PIP_PROGRESS_BAR=off
 RUN apt update && apt install -y \
 	git \
 	libgl1-mesa-glx \
+	libxrender1 \
 	&& rm -rf /var/lib/apt/lists/*
 
 # install cadquery & build123d
