@@ -1,5 +1,5 @@
 # FROM python:3.12-alpine AS build123d
-FROM python:3.12-slim AS build123d
+FROM python:3.12-slim-trixie AS build123d
 
 LABEL org.opencontainers.image.title='build123d Python-based parametric CAD modeler'
 # https://github.com/gumyr/build123d/blob/v0.7.0/LICENSE
@@ -12,10 +12,9 @@ ENV PIP_PROGRESS_BAR=off
 # RUN apk add --no-cache --update \
 # 	git \
 # 	mesa-gl
-# gettext-base provides `envsubst`.
 RUN apt update && apt install -y \
 	git \
-	libgl1-mesa-glx \
+	libgl1 \
 	libxrender1 \
 	&& rm -rf /var/lib/apt/lists/*
 
